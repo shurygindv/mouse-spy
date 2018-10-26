@@ -29,6 +29,6 @@ function createSheetService(authContext) {
             }
         });
 
-        console.log(result);
+        console.log(result.data);
     });
 }
