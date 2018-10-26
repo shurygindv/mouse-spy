@@ -14,23 +14,32 @@ const MOUSE_EVENT = {
 }
 
 class MouseCounter {
-    constructor () {
+    constructor (options) {
         this._mouse = new Mouse();
 
-        this.LBUTTON = 5;
+        this.LBUTTON = 365;
         this.RBUTTON = 3;
+
+        this._options = {
+            timer: options.timer,
+        };
     }
 
     on (type, callback) {
         this._mouse.on(type, this._withDelay(callback));
     }
 
+    _getTimeRange () {
+        return this._options.timer.getTime();
+    }
+
     _withDelay (callback) {
-        const debounced = _.throttle(
-            callback,
-            60000
-        );
-        return this._withResultNormalizer(debounced)
+        const delay =  this._getTimeRange();
+        const throttledCallback = _.throttle(callback, delay);
+
+        console.log(`Delayed in <${delay}>`);
+
+        return this._withResultNormalizer(throttledCallback)
     }
 
     _withResultNormalizer (callback) {

@@ -1,9 +1,13 @@
 const {MOUSE_EVENT, MouseCounter} = require('./counter/mouse');
 const {SHEET_API_TYPES} = require('./sheets/types');
 const {SheetService} = require('./sheets/service');
+const {RandomTimer} = require('./helpers/timer');
 const {SheetApi} = require('./sheets/api');
 
-const mouseCounter = new MouseCounter();
+const mouseCounter = new MouseCounter({
+    timer: new RandomTimer(),
+});
+
 const sheetApi = new SheetApi();
 
 sheetApi.on(SHEET_API_TYPES.AUTHORIZED, createSheetService);
