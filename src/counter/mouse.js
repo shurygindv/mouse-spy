@@ -17,8 +17,8 @@ class MouseCounter {
     constructor () {
         this._mouse = new Mouse();
 
-        this.LBUTTON = 0;
-        this.RBUTTON = 0;
+        this.LBUTTON = 5;
+        this.RBUTTON = 3;
     }
 
     on (type, callback) {
@@ -26,10 +26,11 @@ class MouseCounter {
     }
 
     _withDelay (callback) {
-        return _.debounce(
-            this._withResultNormalizer(callback),
-            2000,
-        )
+        const debounced = _.throttle(
+            callback,
+            60000
+        );
+        return this._withResultNormalizer(debounced)
     }
 
     _withResultNormalizer (callback) {
