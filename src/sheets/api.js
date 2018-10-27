@@ -17,6 +17,8 @@ class SheetApi extends EventEmitter {
 
             this._authorize(JSON.parse(content), this._notifySubscribersAfter);
         });
+
+        return this;
     }
 
     _authorize (credentials, callback) {

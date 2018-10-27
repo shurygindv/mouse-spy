@@ -1,34 +1,61 @@
-const {MOUSE_EVENT, MouseCounter} = require('./counter/mouse');
-const {SHEET_API_TYPES} = require('./sheets/types');
-const {SheetService} = require('./sheets/service');
-const {RandomTimer} = require('./helpers/timer');
-const {SheetApi} = require('./sheets/api');
+const {MouseSheetAdapter, SHEET_ACTIONS} = require('./mouse-sheet-adapter')
+const {MouseCounter}                     = require('./counter/mouse');
+const {SHEET_API_TYPES}                  = require('./sheets/types');
+const {SheetService}                     = require('./sheets/service');
+const {SheetApi}                         = require('./sheets/api');
+const {Cell}                             = require ('./helpers/cell')
 
-const mouseCounter = new MouseCounter({
-    timer: new RandomTimer(),
-});
 
 const sheetApi = new SheetApi();
 
-sheetApi.on(SHEET_API_TYPES.AUTHORIZED, createSheetService);
+sheetApi
+    .connect()
+    .on(SHEET_API_TYPES.AUTHORIZED, createAdapter);
 
-sheetApi.connect();
-
-function createSheetService(authContext) {
-    const sheetService = new SheetService(authContext, {
+const createSheetService = (authContext) => (
+    new SheetService(authContext, {
         spreadsheetId: "1SUjOytdmmOv17pN4eh5nIRnjNtKqZepejm6VGO-ySwg",
-        range: 'AN52:AO52',
-    });
+    })
+)
 
-    mouseCounter.on(MOUSE_EVENT.MOUSEDOWN, async (values) => {
-    
-        const result = await sheetService.update({
-            valueInputOption: 'RAW',
-            resource: {
-                values: [values],
+const createChangeableCell = (initialCell) => (
+    new Cell({
+        initialCell: initialCell,
+        incrementIf: undefined,
+    })
+);
+
+const createMouseCounter = () => (
+    new MouseCounter()
+);
+
+function createAdapter(authContext) {
+    const sheetService = createSheetService(authContext);
+    const mouseCounter = createMouseCounter();
+    const cell         = createChangeableCell('AN53:AO53');
+
+    const adapter = new MouseSheetAdapter({
+        sheetService: sheetService,
+        mouseCounter: mouseCounter,
+        middlewares : [{
+            test: SHEET_ACTIONS.GET,
+            use : (queryParams) => {
+                return {
+                    ...queryParams,
+                    range: cell.value(),
+                };
             }
-        });
-
-        console.log(result.data);
+        }, {
+            test: SHEET_ACTIONS.UPDATE,
+            use : (queryParams) => {
+                return {
+                    ...queryParams,
+                    valueInputOption: 'RAW',
+                    range           : cell.value(),
+                };
+            }
+        }]
     });
+
+    adapter.init();
 }

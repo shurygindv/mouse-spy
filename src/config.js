@@ -1,10 +1,11 @@
-const Spreadsheets = {
-    Scope: {
-        Full: 'https://www.googleapis.com/auth/spreadsheets',
-        ReadOnly: 'https://www.googleapis.com/auth/spreadsheets.readonly',
+const Spreadsheet = {
+    spreadsheetId: "1SUjOytdmmOv17pN4eh5nIRnjNtKqZepejm6VGO-ySwg",
+    scope: {
+        full: 'https://www.googleapis.com/auth/spreadsheets',
+        readOnly: 'https://www.googleapis.com/auth/spreadsheets.readonly',
     }
 };
 
 module.exports = {
-    Spreadsheets
+    Spreadsheet,
 };

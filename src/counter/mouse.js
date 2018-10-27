@@ -14,52 +14,39 @@ const MOUSE_EVENT = {
 }
 
 class MouseCounter {
-    constructor (options) {
+    constructor () {
         this._mouse = new Mouse();
 
-        this.LBUTTON = 365;
-        this.RBUTTON = 3;
-
-        this._options = {
-            timer: options.timer,
-        };
+        this._LButton = 0;
+        this._RButton = 0;
     }
 
     on (type, callback) {
-        this._mouse.on(type, this._withDelay(callback));
+        this._mouse.on(type, this._withResultNormalizer(callback));
     }
 
-    _getTimeRange () {
-        return this._options.timer.getTime();
+    setState (LButton, RButton) {
+        this._LButton = LButton;
+        this._RButton = RButton;
     }
 
-    _withDelay (callback) {
-        const delay =  this._getTimeRange();
-        const throttledCallback = _.throttle(callback, delay);
-
-        console.log(`Delayed in <${delay}>`);
-
-        return this._withResultNormalizer(throttledCallback)
-    }
-
-    _withResultNormalizer (callback) {
+    _withResultNormalizer (onEventHandle) {
         return event => {
             const buttonType = _.get(event, 'button');
 
             switch (buttonType) {
                 case MOUSE_TYPES.LBUTTON: {
-                    this.LBUTTON++;
+                    this._LButton++;
                     break;
                 }
                 case MOUSE_TYPES.RBUTTON: {
-                    this.RBUTTON++;
+                    this._RButton++;
                     break;
                 }
             }
 
-            callback(
-                [this.LBUTTON, this.RBUTTON],
-                buttonType,
+            onEventHandle(
+                [this._LButton, this._RButton],
             );
         }
     }

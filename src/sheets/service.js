@@ -1,4 +1,5 @@
 const {google} = require('googleapis');
+const _ = require('lodash');
 const util = require('util');
 
 class SheetService {
@@ -9,7 +10,6 @@ class SheetService {
 
         this._options = {
             spreadsheetId: options.spreadsheetId,
-            range: options.range,
         };
     }
 
@@ -37,16 +37,18 @@ class SheetService {
         })
     }
 
-    async get () {
+    async get (options) {
         let result = null;
 
         try {
-            result = await this._getValues(this._options);
+            result = await this._getValues(
+                _.assign(this._options, options)
+            );
         } catch (e) {
             return console.log(e);
         }
 
-        return result.data.values;
+        return _.get(result, 'data.values');
     }
 
     async update (params) {
