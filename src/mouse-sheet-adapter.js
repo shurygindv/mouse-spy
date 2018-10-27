@@ -44,7 +44,7 @@ class MouseSheetAdapter {
         this._setMouseState(result);
     }
 
-    _handleOnMouseClick(values) {
+    async _handleOnMouseClick(values) {
         console.log("<Clicks>")
         console.log(values);
         console.log("--------")
