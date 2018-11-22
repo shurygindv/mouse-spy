@@ -1,6 +1,6 @@
 # mouse-spy
 
-Status: in development
+Status: work in progress
 
 
 # Description
